@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jeu du Plus ou Moins</title>
+    
+    <style>
+        /* --- LE CSS (Le Design) --- */
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background-color: #eef2f7;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        .game-container {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            text-align: center;
+            width: 320px;
+        }
+
+        h1 { color: #2c3e50; margin-bottom: 20px; }
+
+        input {
+            padding: 12px;
+            font-size: 20px;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            width: 100px;
+            text-align: center;
+            margin-bottom: 15px;
+        }
+
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            font-size: 16px;
+            border-radius: 10px;
+            cursor: pointer;
+            width: 100%;
+            font-weight: bold;
+        }
+
+        button:hover { background-color: #2980b9; }
+
+        #btnRejouer {
+            background-color: #27ae60;
+            margin-top: 10px;
+            display: none; /* Caché au début */
+        }
+
+        #message {
+            font-size: 1.1rem;
+            margin: 20px 0;
+            font-weight: bold;
+            min-height: 24px;
+        }
+
+        .history-section {
+            margin-top: 20px;
+            border-top: 1px solid #eee;
+            padding-top: 10px;
+            text-align: left;
+        }
+
+        #historique {
+            list-style: none;
+            padding: 0;
+            max-height: 120px;
+            overflow-y: auto;
+        }
+
+        #historique li {
+            padding: 5px;
+            font-size: 14px;
+            color: #7f8c8d;
+            border-bottom: 1px solid #f9f9f9;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="game-container">
+        <h1>Plus ou Moins ?</h1>
+        
+        <input type="number" id="choixUtilisateur" placeholder="0-100">
+        <button id="btnValider" onclick="verifierDevinette()">Valider</button>
+        <button id="btnRejouer" onclick="reinitialiserJeu()">Rejouer 🔄</button>
+        
+        <p id="message"></p>
+
+        <div class="history-section">
+            <strong>Tes essais :</strong>
+            <ul id="historique"></ul>
+        </div>
+    </div>
+
+    <script>
+        /* --- LE JAVASCRIPT (La Logique) --- */
+        let nombreSecret;
+        let tentatives;
+
+        function reinitialiserJeu() {
+            nombreSecret = Math.floor(Math.random() * 100) + 1;
+            tentatives = 0;
+            
+            // On remet l'affichage à zéro
+            document.getElementById("message").textContent = "Bonne chance !";
+            document.getElementById("message").style.color = "#333";
+            document.getElementById("historique").innerHTML = "";
+            document.getElementById("choixUtilisateur").value = "";
+            document.getElementById("btnRejouer").style.display = "none";
+            document.getElementById("btnValider").style.display = "block";
+        }
+
+        function verifierDevinette() {
+            const saisie = document.getElementById("choixUtilisateur").value;
+            const message = document.getElementById("message");
+            const devinette = parseInt(saisie);
+
+            if (isNaN(devinette) || devinette < 1 || devinette > 100) {
+                message.textContent = "Choisis entre 1 et 100 !";
+                return;
+            }
+
+            tentatives++;
+            
+            // Ajouter à l'historique
+            const li = document.createElement("li");
+            li.textContent = `Essai ${tentatives} : ${devinette}`;
+            document.getElementById("historique").prepend(li); // Ajoute en haut de la liste
+
+            if (devinette < nombreSecret) {
+                message.textContent = "C'est PLUS ! 📈";
+                message.style.color = "#3498db";
+            } else if (devinette > nombreSecret) {
+                message.textContent = "C'est MOINS ! 📉";
+                message.style.color = "#e74c3c";
+            } else {
+                message.textContent = `BRAVO ! Trouvé en ${tentatives} coups ! 🎉`;
+                message.style.color = "#27ae60";
+                document.getElementById("btnRejouer").style.display = "block";
+                document.getElementById("btnValider").style.display = "none";
+            }
+            
+            document.getElementById("choixUtilisateur").value = ""; // Vide le champ
+        }
+
+        // Lancer le jeu au démarrage
+        reinitialiserJeu();
+    </script>
+</body>
+</html>
